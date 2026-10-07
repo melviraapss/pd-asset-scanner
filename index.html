@@ -1,1 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>PD Asset Scanner</title>
+
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    type="text/javascript">
+  </script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 10px 0 5px;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    #status {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+
+    #result {
+      display: none;
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: #e8f5e9;
+    }
+
+    #resultText {
+      margin-top: 10px;
+      word-break: break-all;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <h1>📦 PD Asset</h1>
+
+  <div class="subtitle">
+    Scan QR Code
+  </div>
+
+  <div id="reader"></div>
+
+  <div id="status">
+    📷 Starting camera...
+  </div>
+
+  <div id="result">
+
+    <strong>✅ QR Code Detected</strong>
+
+    <div id="resultText"></div>
+
+  </div>
+
+
+  <script>
+
+    let scanner;
+    let scanned = false;
+
+
+    function onScanSuccess(decodedText) {
+
+      if (scanned) {
+        return;
+      }
+
+      scanned = true;
+
+      document.getElementById("status").innerText =
+        "✅ QR berhasil terbaca";
+
+      document.getElementById("result").style.display =
+        "block";
+
+      document.getElementById("resultText").innerText =
+        decodedText;
+
+
+      scanner
+        .stop()
+        .catch(function(error) {
+          console.log(error);
+        });
+
+    }
+
+
+    function onScanFailure(error) {
+
+      // Scanner tetap berjalan.
+      // Error kecil selama scanning diabaikan.
+
+    }
+
+
+    function startScanner() {
+
+      scanner = new Html5Qrcode("reader");
+
+
+      scanner.start(
+
+        {
+          facingMode: "environment"
+        },
+
+        {
+          fps: 10,
+
+          qrbox: {
+            width: 250,
+            height: 250
+          }
+
+        },
+
+        onScanSuccess,
+
+        onScanFailure
+
+      )
+
+      .then(function() {
+
+        document.getElementById("status").innerText =
+          "📷 Camera active — arahkan ke QR";
+
+      })
+
+      .catch(function(error) {
+
+        console.error(error);
+
+        document.getElementById("status").innerText =
+          "❌ Camera error: " + error;
+
+      });
+
+    }
+
+
+    window.addEventListener(
+      "load",
+      startScanner
+    );
+
+  </script>
+
+</body>
+</html>
